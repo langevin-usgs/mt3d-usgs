@@ -53,10 +53,10 @@ def p03mt3d(exe_name_mf, exe_name_mt, model_ws, mixelm):
     dis = flopy.modflow.ModflowDis(mf, nlay=nlay, nrow=nrow, ncol=ncol,
                                    delr=delr, delc=delc, top=0., botm=[0 - delv],
                                    perlen=perlen_mf)
-    ibound = np.ones((nlay, nrow, ncol), dtype=np.int)
+    ibound = np.ones((nlay, nrow, ncol), dtype=int)
     ibound[0, :, 0] = -1
     ibound[0, :, -1] = -1
-    strt = np.zeros((nlay, nrow, ncol), dtype=np.float)
+    strt = np.zeros((nlay, nrow, ncol), dtype=float)
     h1 = q * Lx
     strt[0, :, 0] = h1
     bas = flopy.modflow.ModflowBas(mf, ibound=ibound, strt=strt)
@@ -69,7 +69,7 @@ def p03mt3d(exe_name_mf, exe_name_mt, model_ws, mixelm):
 
     modelname_mt = 'p03_mt'
     mt = flopy.mt3d.Mt3dms(modelname=modelname_mt, model_ws=model_ws, 
-                           exe_name=exe_name_mt, modflowmodel=mf)
+                           exe_name=exe_name_mt, modflowmodel=mf, version='mt3d-usgs')
     btn = flopy.mt3d.Mt3dBtn(mt, icbund=1, prsity=prsity, sconc=0)
     dceps = 1.e-5
     nplane = 1
@@ -83,7 +83,7 @@ def p03mt3d(exe_name_mf, exe_name_mt, model_ws, mixelm):
     adv = flopy.mt3d.Mt3dAdv(mt, mixelm=mixelm, dceps=dceps, nplane=nplane, 
                              npl=npl, nph=nph, npmin=npmin, npmax=npmax,
                              nlsink=nlsink, npsink=npsink, percel=0.5)
-    dsp = flopy.mt3d.Mt3dDsp(mt, al=al, trpt=trpt)
+    dsp = flopy.mt3d.Mt3dDsp(mt, al, trpt=trpt, multiDiff=True, nocross=True)
     spd = {0:[0, 15, 15, c0, 2]}
     ssm = flopy.mt3d.Mt3dSsm(mt, stress_period_data=spd)
     gcg = flopy.mt3d.Mt3dGcg(mt)
